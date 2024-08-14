@@ -19,7 +19,7 @@ import { useNavigate } from 'react-router-dom';
 
 import logoImage from './Hunt.png'; // Replace with your actual image path
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5007/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://13.200.240.28:5007/api';
 
 const Register = () => {
   const [username, setUsername] = useState('');

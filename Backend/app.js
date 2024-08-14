@@ -38,7 +38,7 @@ const corsOptions = {
 
 // Use cors middleware with options
 // app.use(cors({
-//     origin: 'http://localhost:3001', // Allow requests from frontend origin
+//     origin: 'http://13.200.240.28:3001', // Allow requests from frontend origin
 //     credentials: true // Allow credentials (cookies, authorization headers, etc.)
 //   }));
 

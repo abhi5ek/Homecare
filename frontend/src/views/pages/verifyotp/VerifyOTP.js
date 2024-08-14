@@ -17,7 +17,7 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilShieldAlt } from '@coreui/icons';
 
-const API_URL = 'http://localhost:5007/api/auth/verifyOTP'; // Backend API URL for verifying OTP
+const API_URL = 'http://13.200.240.28:5007/api/auth/verifyOTP'; // Backend API URL for verifying OTP
 
 const VerifyOTP = () => {
   const [otp, setOTP] = useState('');
