@@ -17,7 +17,7 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilLockLocked } from '@coreui/icons';
 
-const API_URL = 'http://13.200.240.28:5000/api/auth/resetPassword'; // Backend API URL for resetting password
+const API_URL = 'http://localhost:5001/api/auth/resetPassword'; // Backend API URL for resetting password
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');

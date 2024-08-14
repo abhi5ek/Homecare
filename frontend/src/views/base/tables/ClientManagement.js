@@ -66,7 +66,7 @@ const ClientManagement = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await axios.get('http://13.200.240.28:5000/api/client/');
+      const response = await axios.get('http://localhost:5001/api/client/');
       setClients(response.data.data || []);
     } catch (error) {
       setError('Error fetching clients');
@@ -78,7 +78,7 @@ const ClientManagement = () => {
 
   const handleAssign = async (id) => {
     try {
-      const response = await axios.get('http://13.200.240.28:5000/api/guide/');
+      const response = await axios.get('http://localhost:5001/api/guide/');
       setWorkers(response.data.data);
       setView(true);
 
@@ -90,7 +90,7 @@ const ClientManagement = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://13.200.240.28:5000/api/client/deleteClient/${id}`);
+      await axios.delete(`http://localhost:5001/api/client/deleteClient/${id}`);
       setClients(clients.filter(client => client._id !== id));
     } catch (error) {
       setError('Error deleting user');
@@ -104,7 +104,7 @@ const ClientManagement = () => {
     if (confirmEdit) {
       const { _id } = selectedclient;
       try {
-        await axios.put(`http://13.200.240.28:5000/api/client/editClient/${_id}`, formData);
+        await axios.put(`http://localhost:5001/api/client/editClient/${_id}`, formData);
         setEditVisible(false);
         resetFormData();
         await fetchClients();
@@ -141,8 +141,8 @@ const ClientManagement = () => {
 
     try {
       console.log("hhhh", formData);
-      // const response = await axios.post('http://13.200.240.28:5000/api/client/addClient', formData);
-      const response = await axios.post('http://13.200.240.28:5000/api/client/addClient', data, {
+      // const response = await axios.post('http://localhost:5001/api/client/addClient', formData);
+      const response = await axios.post('http://localhost:5001/api/client/addClient', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -167,7 +167,7 @@ const ClientManagement = () => {
       const payload = { status };
 
       console.log(payload);
-      const response = await axios.put(`http://13.200.240.28:5000/api/guide/updatestatus/${guideId}/${workstatusdataid}`, payload);
+      const response = await axios.put(`http://localhost:5001/api/guide/updatestatus/${guideId}/${workstatusdataid}`, payload);
 
       if (response.status === 200) {
         console.log('Work status updated successfully', response.data);
@@ -186,7 +186,7 @@ const ClientManagement = () => {
   //     var assignS = assigned === 'true'? 'NOT ASSIGNED' : 'ASSIGNED';
   //     var assign = assigned === 'true'? false : true ;
   //     console.log(id,assignStatus,assigned)
-  //     await axios.put(`http://13.200.240.28:5000/api/client/editClient/${id}`,{assigned:assign,assignStatus:assignS});  
+  //     await axios.put(`http://localhost:5001/api/client/editClient/${id}`,{assigned:assign,assignStatus:assignS});  
   //     resetFormData();
   //     await fetchClients();
   //   }catch(error){
@@ -201,11 +201,11 @@ const ClientManagement = () => {
 
   //     console.log(id,assignStatus,assigned);
 
-  //     const response = await axios.get(`http://13.200.240.28:5000/api/client/getworkerid/${id}`);  // getting workers id from client
+  //     const response = await axios.get(`http://localhost:5001/api/client/getworkerid/${id}`);  // getting workers id from client
   //     const getworkerid = response.data.data.workerid;
   //     console.log('getworkerid',getworkerid);
 
-  //     const guidedata = await axios.get(`http://13.200.240.28:5000/api/guide/getguide/${getworkerid}`);
+  //     const guidedata = await axios.get(`http://localhost:5001/api/guide/getguide/${getworkerid}`);
   //     const workstatusdataid = guidedata.data.data.workStatus;
   //     const specificWorkStatus = workstatusdataid.find(status => status.clientId === id && status.status === 'PENDING'); // Replace 'someClientId' with your criteria
   //     const workStatusId = specificWorkStatus._id; 
@@ -214,16 +214,16 @@ const ClientManagement = () => {
 
 
 
-  //     const clientiddata = await axios.get(`http://13.200.240.28:5000/api/guide/getguide/${getworkerid}`);
+  //     const clientiddata = await axios.get(`http://localhost:5001/api/guide/getguide/${getworkerid}`);
   //     const updatemodelclientid=clientiddata.data.data.modelclientid;
   //     console.log(updatemodelclientid);
   //     const updatedmodelclientid = updatemodelclientid.filter(modelclient => modelclient!==id);
   //     console.log('ggf',updatedmodelclientid);
-  //     await axios.put(`http://13.200.240.28:5000/api/guide/updateworker/${getworkerid}`, {modelclientid:updatedmodelclientid});
+  //     await axios.put(`http://localhost:5001/api/guide/updateworker/${getworkerid}`, {modelclientid:updatedmodelclientid});
 
 
 
-  //     await axios.put(`http://13.200.240.28:5000/api/client/editClient/${id}`,{assigned: assign,assignStatus:assignS,workerid:''});
+  //     await axios.put(`http://localhost:5001/api/client/editClient/${id}`,{assigned: assign,assignStatus:assignS,workerid:''});
   //     resetFormData();
   //     await fetchClients();
   //   }catch(error){
@@ -235,7 +235,7 @@ const ClientManagement = () => {
   const clientAssigned = async (id, assigned, assignStatus) => {
     try {
       // if (assigned === 'REASSIGN')
-      //   await axios.put(`http://13.200.240.28:5000/api/client/reassign/${id}`)
+      //   await axios.put(`http://localhost:5001/api/client/reassign/${id}`)
       setClientid(id);
       setStatus(assigned);
       handleAssign();
@@ -248,11 +248,11 @@ const ClientManagement = () => {
 
   const viewAssignedGuide = async (id) => {
     try {
-      const response = await axios.get(`http://13.200.240.28:5000/api/client/getbyid/${id}`)
+      const response = await axios.get(`http://localhost:5001/api/client/getbyid/${id}`)
       setClientid(id);
       const guideid = response.data.data.workerid;
       // console.log('guideid',guideid);
-      const guidedata = await axios.get(`http://13.200.240.28:5000/api/guide/getguide/${guideid}`)
+      const guidedata = await axios.get(`http://localhost:5001/api/guide/getguide/${guideid}`)
       setWorker(guidedata.data.data);
       console.log('worker',worker)
       setDataVisible(true);
@@ -264,7 +264,7 @@ const ClientManagement = () => {
 
   const removeworker = async (id) => {
     try{
-      const response = await axios.put(`http://13.200.240.28:5000/api/client/reassign/${id}`)
+      const response = await axios.put(`http://localhost:5001/api/client/reassign/${id}`)
       console.log("Deleted", response.data.data);
       fetchClients();
     }catch(error){
@@ -275,7 +275,7 @@ const ClientManagement = () => {
 
   // const assignclientid = async (id) => {
   //   try{
-  //     await axios.put(`http://13.200.240.28:5000/api/guide/${id}`,{modelclientid:clientid});
+  //     await axios.put(`http://localhost:5001/api/guide/${id}`,{modelclientid:clientid});
   //     resetFormData();
   //     await fetchClients();
   //   }catch(error){
@@ -287,9 +287,9 @@ const ClientManagement = () => {
   const assignWorker = async (id, clientid, assigned) => {
 
     if (assigned === 'REASSIGN')
-      await axios.put(`http://13.200.240.28:5000/api/client/reassign/${clientid}`)
+      await axios.put(`http://localhost:5001/api/client/reassign/${clientid}`)
 
-    const response = await axios.get(`http://13.200.240.28:5000/api/client/getbyid/${clientid}`)
+    const response = await axios.get(`http://localhost:5001/api/client/getbyid/${clientid}`)
     const clientName = response.data.data.name;
 
     const clientId = clientid;
@@ -299,12 +299,12 @@ const ClientManagement = () => {
       clientName, clientId, status
     }
 
-    await axios.put(`http://13.200.240.28:5000/api/guide/updateworkstatus/${id}`, { workStatus: payload })
+    await axios.put(`http://localhost:5001/api/guide/updateworkstatus/${id}`, { workStatus: payload })
 
     const workerid = id;
-    await axios.put(`http://13.200.240.28:5000/api/client/editClient/${clientid}`, { workerid: workerid, assignStatus: 'ASSIGNED', assigned: 'REASSIGN' });
+    await axios.put(`http://localhost:5001/api/client/editClient/${clientid}`, { workerid: workerid, assignStatus: 'ASSIGNED', assigned: 'REASSIGN' });
 
-    await axios.put(`http://13.200.240.28:5000/api/guide/${id}`, { modelclientid: clientid });
+    await axios.put(`http://localhost:5001/api/guide/${id}`, { modelclientid: clientid });
     handleAssign();
     resetFormData();
     await fetchClients();
@@ -345,6 +345,7 @@ const ClientManagement = () => {
       medicalhistory: '',
       password: '',
       role: '',
+      assigned: 'ASSIGN',
       assignStatus: 'NOT ASSIGNED',
       image: null
     });
@@ -391,7 +392,7 @@ const ClientManagement = () => {
               <CTableRow key={client._id}>
                 <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                 <CTableDataCell style={{ fontSize: '0.870rem' }}>
-                  {client.image && <img src={`http://13.200.240.28:5000${client.image}`} alt={client.name} style={{ width: '100px' }} />}
+                  {client.image && <img src={`http://localhost:5001${client.image}`} alt={client.name} style={{ width: '100px' }} />}
                 </CTableDataCell>
                 <CTableDataCell style={{ fontSize: '0.870rem' }}>{client.name || 'null'}</CTableDataCell>
                 <CTableDataCell style={{ fontSize: '0.870rem' }}>{client.email || 'null'}</CTableDataCell>
@@ -563,7 +564,7 @@ const ClientManagement = () => {
         <CModalBody>
           <CListGroup flush>
             <CListGroupItem>
-              Image:{worker.image && <img src={`http://13.200.240.28:5000${worker.image}`} alt={worker.name} style={{ width: '100px' }} />}
+              Image:{worker.image && <img src={`http://localhost:5001${worker.image}`} alt={worker.name} style={{ width: '100px' }} />}
             </CListGroupItem>
             <CListGroupItem>Name: {worker.name || 'null'}</CListGroupItem>
             <CListGroupItem>Age: {worker.age || 'null'}</CListGroupItem>
