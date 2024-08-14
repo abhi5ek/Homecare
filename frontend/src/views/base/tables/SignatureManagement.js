@@ -19,7 +19,7 @@ const SignatureManagement = () => {
     
       const fetchClients = async () => {
         try {
-          const response = await axios.get('http://13.200.240.28:5000/api/client/');
+          const response = await axios.get('http://localhost:5000/api/client/');
           setClients(response.data.data);
         } catch (error) {
           setError('Error fetching clients');

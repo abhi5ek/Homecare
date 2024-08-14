@@ -39,17 +39,19 @@ const ClientManagement = () => {
   const [workers, setWorkers] = useState([]);
   // const [assignWorkers, setassignWorkers] = useState([]);
   const [view, setView] = useState(false);
+  const [dataVisible, setDataVisible] = useState(false);
   const [clientid, setClientid] = useState("");
-  const [workerid, setWorkerid] = useState();
+  const [worker, setWorker] = useState("");
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     mobileNumber: '',
     address: '',
-    age:'',
+    age: '',
     medicalhistory: '',
     password: '',
     role: '',
+    assigned: 'ASSIGN',
     assignStatus: 'NOT ASSIGNED',
     image: null
   });
@@ -58,12 +60,12 @@ const ClientManagement = () => {
   useEffect(() => {
     fetchClients();
   }, []);
-  
+
 
 
   const fetchClients = async () => {
     try {
-      const response = await axios.get('http://13.200.240.28:5000/api/client/');
+      const response = await axios.get('http://localhost:5000/api/client/');
       setClients(response.data.data || []);
     } catch (error) {
       setError('Error fetching clients');
@@ -71,23 +73,23 @@ const ClientManagement = () => {
     }
   };
 
-  
 
-  const handleAssign = async(id) => {
-    try{
-      const response = await axios.get('http://13.200.240.28:5000/api/guide/');
+
+  const handleAssign = async (id) => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/guide/');
       setWorkers(response.data.data);
       setView(true);
 
-    } catch(error){
+    } catch (error) {
       setError('Error fetching clients');
       console.error('Error fetching clients:', error);
     }
-   };
+  };
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://13.200.240.28:5000/api/client/deleteClient/${id}`);
+      await axios.delete(`http://localhost:5000/api/client/deleteClient/${id}`);
       setClients(clients.filter(client => client._id !== id));
     } catch (error) {
       setError('Error deleting user');
@@ -101,7 +103,7 @@ const ClientManagement = () => {
     if (confirmEdit) {
       const { _id } = selectedclient;
       try {
-        await axios.put(`http://13.200.240.28:5000/api/client/editClient/${_id}`, formData);
+        await axios.put(`http://localhost:5000/api/client/editClient/${_id}`, formData);
         setEditVisible(false);
         resetFormData();
         await fetchClients();
@@ -114,7 +116,7 @@ const ClientManagement = () => {
       alert('Update action canceled');
     }
   };
-  
+
 
   const handleAddClient = async (event) => {
     event.preventDefault();
@@ -133,13 +135,13 @@ const ClientManagement = () => {
     data.append('workerid', formData.workerid);
     data.append('image', formData.image);
 
-    console.log('data',data);
-    
+    console.log('data', data);
+
 
     try {
-      console.log("hhhh",formData);
-      // const response = await axios.post('http://13.200.240.28:5000/api/client/addClient', formData);
-      const response = await axios.post('http://13.200.240.28:5000/api/client/addClient', data, {
+      console.log("hhhh", formData);
+      // const response = await axios.post('http://localhost:5000/api/client/addClient', formData);
+      const response = await axios.post('http://localhost:5000/api/client/addClient', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -156,16 +158,16 @@ const ClientManagement = () => {
     }
   };
 
-  
+
   const updateStatus = async (guideId, workstatusdataid) => {
     try {
-      
+
       const status = 'COMPLETED';
       const payload = { status };
-      
+
       console.log(payload);
-      const response = await axios.put(`http://13.200.240.28:5000/api/guide/updatestatus/${guideId}/${workstatusdataid}`, payload);
-      
+      const response = await axios.put(`http://localhost:5000/api/guide/updatestatus/${guideId}/${workstatusdataid}`, payload);
+
       if (response.status === 200) {
         console.log('Work status updated successfully', response.data);
       } else {
@@ -175,7 +177,7 @@ const ClientManagement = () => {
       console.error('Error updating work status:', error);
     }
   };
-  
+
   // const clientNotAssigned = async (id,assigned,assignStatus) => {
   //   try{
   //     handleAssign();
@@ -183,7 +185,7 @@ const ClientManagement = () => {
   //     var assignS = assigned === 'true'? 'NOT ASSIGNED' : 'ASSIGNED';
   //     var assign = assigned === 'true'? false : true ;
   //     console.log(id,assignStatus,assigned)
-  //     await axios.put(`http://13.200.240.28:5000/api/client/editClient/${id}`,{assigned:assign,assignStatus:assignS});  
+  //     await axios.put(`http://localhost:5000/api/client/editClient/${id}`,{assigned:assign,assignStatus:assignS});  
   //     resetFormData();
   //     await fetchClients();
   //   }catch(error){
@@ -195,14 +197,14 @@ const ClientManagement = () => {
   //   try{
   //     var assignS = assigned === 'true'? 'NOT ASSIGNED' : 'ASSIGNED' ;
   //     var assign = assigned === 'true'? false : true ;
-      
+
   //     console.log(id,assignStatus,assigned);
 
-  //     const response = await axios.get(`http://13.200.240.28:5000/api/client/getworkerid/${id}`);  // getting workers id from client
+  //     const response = await axios.get(`http://localhost:5000/api/client/getworkerid/${id}`);  // getting workers id from client
   //     const getworkerid = response.data.data.workerid;
   //     console.log('getworkerid',getworkerid);
 
-  //     const guidedata = await axios.get(`http://13.200.240.28:5000/api/guide/getguide/${getworkerid}`);
+  //     const guidedata = await axios.get(`http://localhost:5000/api/guide/getguide/${getworkerid}`);
   //     const workstatusdataid = guidedata.data.data.workStatus;
   //     const specificWorkStatus = workstatusdataid.find(status => status.clientId === id && status.status === 'PENDING'); // Replace 'someClientId' with your criteria
   //     const workStatusId = specificWorkStatus._id; 
@@ -210,17 +212,17 @@ const ClientManagement = () => {
   //     updateStatus(getworkerid,workStatusId);  // updates workstatus from pending to completed
 
 
-      
-  //     const clientiddata = await axios.get(`http://13.200.240.28:5000/api/guide/getguide/${getworkerid}`);
+
+  //     const clientiddata = await axios.get(`http://localhost:5000/api/guide/getguide/${getworkerid}`);
   //     const updatemodelclientid=clientiddata.data.data.modelclientid;
   //     console.log(updatemodelclientid);
   //     const updatedmodelclientid = updatemodelclientid.filter(modelclient => modelclient!==id);
   //     console.log('ggf',updatedmodelclientid);
-  //     await axios.put(`http://13.200.240.28:5000/api/guide/updateworker/${getworkerid}`, {modelclientid:updatedmodelclientid});
+  //     await axios.put(`http://localhost:5000/api/guide/updateworker/${getworkerid}`, {modelclientid:updatedmodelclientid});
 
 
 
-  //     await axios.put(`http://13.200.240.28:5000/api/client/editClient/${id}`,{assigned: assign,assignStatus:assignS,workerid:''});
+  //     await axios.put(`http://localhost:5000/api/client/editClient/${id}`,{assigned: assign,assignStatus:assignS,workerid:''});
   //     resetFormData();
   //     await fetchClients();
   //   }catch(error){
@@ -230,20 +232,48 @@ const ClientManagement = () => {
   // }
 
   const clientAssigned = async (id, assigned, assignStatus) => {
-      try {
-        handleAssign();
-        setClientid(id);
-        // assigned === 'true' ? clientIsAssigned(id, assigned, assignStatus) : clientNotAssigned(id, assigned, assignStatus);
-      } catch (error) {
-        alert('Error assigning client');
-        console.error('Error assigning client:', error);
-      }
+    try {
+      if (assigned === 'REASSIGN')
+        await axios.put(`http://localhost:5000/api/client/reassign/${id}`)
+      handleAssign();
+      setClientid(id);
+      // assigned === 'true' ? clientIsAssigned(id, assigned, assignStatus) : clientNotAssigned(id, assigned, assignStatus);
+    } catch (error) {
+      alert('Error assigning client');
+      console.error('Error assigning client:', error);
+    }
   };
-  
+
+  const viewAssignedGuide = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/client/getbyid/${id}`)
+      setClientid(id);
+      const guideid = response.data.data.workerid;
+      // console.log('guideid',guideid);
+      const guidedata = await axios.get(`http://localhost:5000/api/guide/getguide/${guideid}`)
+      setWorker(guidedata.data.data);
+      console.log('worker',worker)
+      setDataVisible(true);
+    } catch (error) {
+      console.log('Error fetching worker data', error);
+    }
+  };
+
+
+  const removeworker = async (id) => {
+    try{
+      const response = await axios.put(`http://localhost:5000/api/client/reassign/${id}`)
+      console.log("Deleted", response.data.data);
+      fetchClients();
+    }catch(error){
+      console.log("Deletaion Failed", error);
+    }
+  }
+
 
   // const assignclientid = async (id) => {
   //   try{
-  //     await axios.put(`http://13.200.240.28:5000/api/guide/${id}`,{modelclientid:clientid});
+  //     await axios.put(`http://localhost:5000/api/guide/${id}`,{modelclientid:clientid});
   //     resetFormData();
   //     await fetchClients();
   //   }catch(error){
@@ -253,29 +283,29 @@ const ClientManagement = () => {
   // }
 
   const assignWorker = async (id) => {
-  
-    const response = await axios.get(`http://13.200.240.28:5000/api/client/getbyid/${clientid}`)
+
+    const response = await axios.get(`http://localhost:5000/api/client/getbyid/${clientid}`)
     const clientName = response.data.data.name;
-    
-    const clientId=clientid;
-    const status='PENDING';
+
+    const clientId = clientid;
+    const status = 'PENDING';
 
     const payload = {
-      clientName,clientId,status  
+      clientName, clientId, status
     }
 
-    await axios.put(`http://13.200.240.28:5000/api/guide/updateworkstatus/${id}`,{workStatus:payload})
-    
-    const workerid=id;
-    await axios.put(`http://13.200.240.28:5000/api/client/editClient/${clientid}`,{workerid:workerid, assignStatus:'ASSIGNED'});
-  
-    await axios.put(`http://13.200.240.28:5000/api/guide/${id}`,{modelclientid:clientid});
+    await axios.put(`http://localhost:5000/api/guide/updateworkstatus/${id}`, { workStatus: payload })
+
+    const workerid = id;
+    await axios.put(`http://localhost:5000/api/client/editClient/${clientid}`, { workerid: workerid, assignStatus: 'ASSIGNED', assigned: 'REASSIGN' });
+
+    await axios.put(`http://localhost:5000/api/guide/${id}`, { modelclientid: clientid });
     handleAssign();
     resetFormData();
     await fetchClients();
     setView(false);
-      
-    };
+
+  };
 
   // const handleAssign = 
 
@@ -294,9 +324,9 @@ const ClientManagement = () => {
   const handleChange = (e) => {
     const { id, value, files } = e.target;
     if (id === 'image') {
-        setFormData({ ...formData, image: files[0] });
+      setFormData({ ...formData, image: files[0] });
     } else {
-        setFormData({ ...formData, [id]: value });
+      setFormData({ ...formData, [id]: value });
     }
   };
 
@@ -306,7 +336,7 @@ const ClientManagement = () => {
       email: '',
       mobileNumber: '',
       address: '',
-      age:'',
+      age: '',
       medicalhistory: '',
       password: '',
       role: '',
@@ -331,7 +361,7 @@ const ClientManagement = () => {
             <CCol xs="auto" className="px-4">
               <CButton color="primary" className="px-4" onClick={() => setFormVisible(true)}>Add clients</CButton>
             </CCol>
-            
+
           </CRow>
         </CCardHeader>
 
@@ -354,9 +384,9 @@ const ClientManagement = () => {
           <CTableBody>
             {clients.map((client, index) => (
               <CTableRow key={client._id}>
-                <CTableHeaderCell scope="row">{index+1}</CTableHeaderCell>
+                <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                 <CTableDataCell style={{ fontSize: '0.870rem' }}>
-                  {client.image && <img src={`http://13.200.240.28:5000${client.image}`} alt={client.name} style={{ width: '100px' }} />}
+                  {client.image && <img src={`http://localhost:5000${client.image}`} alt={client.name} style={{ width: '100px' }} />}
                 </CTableDataCell>
                 <CTableDataCell style={{ fontSize: '0.870rem' }}>{client.name || 'null'}</CTableDataCell>
                 <CTableDataCell style={{ fontSize: '0.870rem' }}>{client.email || 'null'}</CTableDataCell>
@@ -365,11 +395,21 @@ const ClientManagement = () => {
                 <CTableDataCell style={{ fontSize: '0.870rem' }}>{client.age || 'null'}</CTableDataCell>
                 <CTableDataCell style={{ fontSize: '0.870rem' }}>{client.medicalhistory || 'null'}</CTableDataCell>
                 <CTableDataCell style={{ fontSize: '0.870rem' }}>
-                  <CButton  color='info' onClick={() => {clientAssigned(client._id,client.assigned,client.assignStatus)}} style={{ width: '80px',height: '30px',padding: '4px 8px', 
-                  fontSize: '0.95rem'}}>{'ASSIGN'|| 'null'}</CButton>
+                  <CButton color={client.assignStatus === 'ASSIGNED' ? 'success' : 'info'}
+                    onClick={() => { clientAssigned(client._id, client.assigned, client.assignStatus) }}>
+                    {client.assigned || 'null'}
+                  </CButton>
                 </CTableDataCell>
-                <CTableDataCell style={{ fontSize: '0.870rem'}}>{client.assignStatus || 'null'}</CTableDataCell>
-                <CTableDataCell style={{width: '10%'}} className="text-center">
+                <CTableDataCell style={{ fontSize: '0.870rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                  {client.assignStatus == 'ASSIGNED' ? (
+                    <CButton onClick={() => viewAssignedGuide(client._id)} color="primary">
+                      View
+                    </CButton>
+                  ) : (
+                    client.assignStatus
+                  )}
+                </CTableDataCell>
+                <CTableDataCell style={{ width: '10%' }} className="text-center">
                   <CButton className="me-1 p-1" onClick={() => handleEdit(client)}>
                     <FontAwesomeIcon icon={faEdit} style={{ color: "#c24c9d" }} />
                   </CButton>
@@ -429,40 +469,42 @@ const ClientManagement = () => {
         </CModalFooter>
       </CModal>
 
-      <CModal size='xl' visible={view} onClose={() => { setView(false);}}>
+      <CModal size='xl' visible={view} onClose={() => { setView(false); }}>
         <CModalHeader closeButton>
           <CModalTitle>Assign Worker</CModalTitle>
         </CModalHeader>
         <CModalBody>
-        <CTable hover bordered striped responsive>
-          <CTableHead color="dark">
-            <CTableRow>
-              <CTableHeaderCell scope="col" >#</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Name</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Email</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Mobile Number</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Role</CTableHeaderCell>
-              <CTableHeaderCell scope="col" className="text-center">Actions</CTableHeaderCell>
-            </CTableRow>
-
-          </CTableHead>
-          <CTableBody>
-            {workers.map((workers, index) => (
-              <CTableRow key={workers._id}>
-                <CTableHeaderCell scope="row" >{index + 1}</CTableHeaderCell>
-                <CTableDataCell style={{ fontSize: '0.870rem' }}>{workers.name || 'null'}</CTableDataCell>
-                <CTableDataCell style={{ fontSize: '0.870rem' }}>{workers.email || 'null'}</CTableDataCell>
-                <CTableDataCell  style={{ fontSize: '0.870rem' }}>{workers.mobileNumber || 'null'}</CTableDataCell>
-                <CTableDataCell  style={{ fontSize: '0.870rem' }}>{workers.role || 'null'}</CTableDataCell>
-                <CTableDataCell style={{ fontSize: '0.870rem' }}>
-                  <CButton color="success" onClick={() => {assignWorker(workers._id,workers.assign)}} style={{ width: '100px',height: '50px',padding: '4px 8px', 
-                  fontSize: '0.95rem'}}>ASSIGN</CButton>
-                </CTableDataCell>
+          <CTable hover bordered striped responsive>
+            <CTableHead color="dark">
+              <CTableRow>
+                <CTableHeaderCell scope="col" >#</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Email</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Mobile Number</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Role</CTableHeaderCell>
+                <CTableHeaderCell scope="col" className="text-center">Actions</CTableHeaderCell>
               </CTableRow>
-            ))}
-          </CTableBody>
 
-        </CTable>
+            </CTableHead>
+            <CTableBody>
+              {workers.map((workers, index) => (
+                <CTableRow key={workers._id}>
+                  <CTableHeaderCell scope="row" >{index + 1}</CTableHeaderCell>
+                  <CTableDataCell style={{ fontSize: '0.870rem' }}>{workers.name || 'null'}</CTableDataCell>
+                  <CTableDataCell style={{ fontSize: '0.870rem' }}>{workers.email || 'null'}</CTableDataCell>
+                  <CTableDataCell style={{ fontSize: '0.870rem' }}>{workers.mobileNumber || 'null'}</CTableDataCell>
+                  <CTableDataCell style={{ fontSize: '0.870rem' }}>{workers.role || 'null'}</CTableDataCell>
+                  <CTableDataCell style={{ fontSize: '0.870rem' }}>
+                    <CButton color="success" onClick={() => { assignWorker(workers._id) }} style={{
+                      width: '100px', height: '50px', padding: '4px 8px',
+                      fontSize: '0.95rem'
+                    }}>ASSIGN</CButton>
+                  </CTableDataCell>
+                </CTableRow>
+              ))}
+            </CTableBody>
+
+          </CTable>
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => { setView(false); }}>Close</CButton>
@@ -506,6 +548,30 @@ const ClientManagement = () => {
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => { setEditVisible(false); resetFormData(); }}>Close</CButton>
+        </CModalFooter>
+      </CModal>
+
+      <CModal visible={dataVisible} onClose={() => { setDataVisible(false); }}>
+        <CModalHeader closeButton>
+          <CModalTitle>Assigned Worker</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CListGroup flush>
+            <CListGroupItem>
+              Image:{worker.image && <img src={`http://localhost:5000${worker.image}`} alt={worker.name} style={{ width: '100px' }} />}
+            </CListGroupItem>
+            <CListGroupItem>Name: {worker.name || 'null'}</CListGroupItem>
+            <CListGroupItem>Age: {worker.age || 'null'}</CListGroupItem>
+            <CListGroupItem>Email: {worker.email || 'null'}</CListGroupItem>
+            <CListGroupItem>Mobile Number: {worker.mobileNumber || 'null'}</CListGroupItem>
+            <CListGroupItem>Address: {worker.address || 'null'}</CListGroupItem>
+            <CListGroupItem>
+              <CButton onClick={() => {removeworker(clientid), setDataVisible(false)}} color="danger">Remove Worker</CButton>
+            </CListGroupItem>
+          </CListGroup>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => { setDataVisible(false) }}>Close</CButton>
         </CModalFooter>
       </CModal>
 
