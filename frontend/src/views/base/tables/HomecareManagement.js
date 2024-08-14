@@ -68,7 +68,7 @@ const HomecareManagement = () => {
 
   const fetchGuides = async () => {
     try {
-      const response = await axios.get('http://localhost:5001/api/guide/');
+      const response = await axios.get('http://localhost:5007/api/guide/');
       setGuides(response.data.data);
     } catch (error) {
       setError('Error fetching guides');
@@ -78,7 +78,7 @@ const HomecareManagement = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5001/api/guide/${id}`);
+      await axios.delete(`http://localhost:5007/api/guide/${id}`);
       setGuides(guides.filter(guide => guide._id !== id));
     } catch (error) {
       setError('Error deleting user');
@@ -102,7 +102,7 @@ const HomecareManagement = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5001/api/guide/register', formData ,{
+      const response = await axios.post('http://localhost:5007/api/guide/register', formData ,{
         headers: {
           'Content-Type': 'multipart/form-data'
       }
@@ -135,7 +135,7 @@ const HomecareManagement = () => {
     event.preventDefault();
     const { _id } = selectedGuide;
     try {
-      await axios.put(`http://localhost:5001/api/guide/editguide/${_id}`, formData);
+      await axios.put(`http://localhost:5007/api/guide/editguide/${_id}`, formData);
       setEditVisible(false);
       resetFormData();
       await fetchGuides(); // Fetch the latest data after updating
@@ -147,7 +147,7 @@ const HomecareManagement = () => {
 
   const  handleworkstatus = async (id) => {
     try{
-      const response = await axios.get(`http://localhost:5001/api/guide/getguide/${id}`);
+      const response = await axios.get(`http://localhost:5007/api/guide/getguide/${id}`);
       const workStatus = response.data.data.workStatus;
       console.log('workstatus',workStatus);
       setGuideid(id);
@@ -165,17 +165,17 @@ const HomecareManagement = () => {
       const confirmation = window.confirm('Work Assignment will be deleted')
       if(confirmation){
         // update the workStatus
-        const response = await axios.get(`http://localhost:5001/api/guide/getguide/${guideId}`);
+        const response = await axios.get(`http://localhost:5007/api/guide/getguide/${guideId}`);
         const updatedguidedata = response.data.data.workStatus.filter( clientId => clientId._id!==workStatusid);
         setStatus(false);
        
         // update the modelclientid
         const updatedmodelclientid = response.data.data.modelclientid.filter(modelclientid => modelclientid!=clientid );
-        await axios.put(`http://localhost:5001/api/guide/updateworker/${guideId}`, {modelclientid:updatedmodelclientid});
+        await axios.put(`http://localhost:5007/api/guide/updateworker/${guideId}`, {modelclientid:updatedmodelclientid});
       
         //removes workerid from clientdata
-        await axios.put(`http://localhost:5001/api/client/editClient/${clientid}`,{workerid:'', assignStatus:'NOT ASSIGNED', assigned:'ASSIGN'});
-        await axios.put(`http://localhost:5001/api/guide/deleteworkstatus/${guideId}`,{workStatus:updatedguidedata});
+        await axios.put(`http://localhost:5007/api/client/editClient/${clientid}`,{workerid:'', assignStatus:'NOT ASSIGNED', assigned:'ASSIGN'});
+        await axios.put(`http://localhost:5007/api/guide/deleteworkstatus/${guideId}`,{workStatus:updatedguidedata});
       }
 
     }catch(error){
@@ -246,7 +246,7 @@ const HomecareManagement = () => {
               <CTableRow key={guide._id}>
                 <CTableHeaderCell scope="row" >{index + 1}</CTableHeaderCell>
                 <CTableDataCell style={{ fontSize: '0.870rem' }}>
-                  {guide.image && <img src={`http://localhost:5001${guide.image}`} alt={guide.name} style={{ width: '100px' }} />}
+                  {guide.image && <img src={`http://localhost:5007${guide.image}`} alt={guide.name} style={{ width: '100px' }} />}
                 </CTableDataCell>
                 <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.name || 'null'}</CTableDataCell>
                 <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.age || 'null'}</CTableDataCell>

@@ -17,7 +17,7 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilEnvelopeClosed } from '@coreui/icons';
 
-const API_URL = 'http://localhost:5001/api/auth/send-email'; // Backend API URL for sending reset password email
+const API_URL = 'http://localhost:5007/api/auth/send-email'; // Backend API URL for sending reset password email
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
