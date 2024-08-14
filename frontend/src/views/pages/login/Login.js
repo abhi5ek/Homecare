@@ -21,7 +21,7 @@ import { cilLockLocked, cilUser } from '@coreui/icons';
 import logoImage from './Logo.png'; // Replace with your actual image path
 import { color } from 'chart.js/helpers';
 
-const API_URL = 'http://localhost:5000/api/auth/login-admin'; // Backend API URL for outfitter login
+const API_URL = 'http://13.200.240.28:5000/api/auth/login-admin'; // Backend API URL for outfitter login
 
 const Login = () => {
   const [email, setEmail] = useState('');
