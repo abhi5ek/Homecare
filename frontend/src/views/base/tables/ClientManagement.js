@@ -42,6 +42,7 @@ const ClientManagement = () => {
   const [dataVisible, setDataVisible] = useState(false);
   const [clientid, setClientid] = useState("");
   const [worker, setWorker] = useState("");
+  const [status, setStatus] = useState("");
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -233,10 +234,11 @@ const ClientManagement = () => {
 
   const clientAssigned = async (id, assigned, assignStatus) => {
     try {
-      if (assigned === 'REASSIGN')
-        await axios.put(`http://13.200.240.28:5000/api/client/reassign/${id}`)
-      handleAssign();
+      // if (assigned === 'REASSIGN')
+      //   await axios.put(`http://13.200.240.28:5000/api/client/reassign/${id}`)
       setClientid(id);
+      setStatus(assigned);
+      handleAssign();
       // assigned === 'true' ? clientIsAssigned(id, assigned, assignStatus) : clientNotAssigned(id, assigned, assignStatus);
     } catch (error) {
       alert('Error assigning client');
@@ -282,7 +284,10 @@ const ClientManagement = () => {
   //   }
   // }
 
-  const assignWorker = async (id) => {
+  const assignWorker = async (id, clientid, assigned) => {
+
+    if (assigned === 'REASSIGN')
+      await axios.put(`http://13.200.240.28:5000/api/client/reassign/${clientid}`)
 
     const response = await axios.get(`http://13.200.240.28:5000/api/client/getbyid/${clientid}`)
     const clientName = response.data.data.name;
@@ -495,7 +500,7 @@ const ClientManagement = () => {
                   <CTableDataCell style={{ fontSize: '0.870rem' }}>{workers.mobileNumber || 'null'}</CTableDataCell>
                   <CTableDataCell style={{ fontSize: '0.870rem' }}>{workers.role || 'null'}</CTableDataCell>
                   <CTableDataCell style={{ fontSize: '0.870rem' }}>
-                    <CButton color="success" onClick={() => { assignWorker(workers._id) }} style={{
+                    <CButton color="success" onClick={() => { assignWorker(workers._id, clientid, status ) }} style={{
                       width: '100px', height: '50px', padding: '4px 8px',
                       fontSize: '0.95rem'
                     }}>ASSIGN</CButton>
