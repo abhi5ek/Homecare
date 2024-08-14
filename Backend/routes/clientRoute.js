@@ -1,6 +1,6 @@
 const express = require('express')
 // const { createform, getform } = require('../controllers/verbalformController');
-const { addClient, getallclient, deleteClient, editClient, getClientbyid, getworkersid} = require('../controllers/clientController');
+const { addClient, getallclient, deleteClient, editClient, getClientbyid, getworkersid, reassign} = require('../controllers/clientController');
 const upload = require('../middleware/multer')
 
 
@@ -9,6 +9,7 @@ const router = express.Router();
 
 // router.post('/addClient',addClient);
 router.post('/addclient',upload.single('image'),addClient);
+router.put('/reassign/:id',reassign);
 
 router.delete('/deleteClient/:id',deleteClient);
 router.get('/',getallclient)

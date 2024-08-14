@@ -1,4 +1,5 @@
 const Client = require('../models/clientModel')
+const Guide = require('../models/guideModel')
 const createError = require('../middleware/error')
 const createSuccess = require('../middleware/success')
 
@@ -40,6 +41,50 @@ const addClient = async(req, res, next) => {
     return next(createError(500, "Something went wrong"));
   }
 };
+
+
+const reassign = async(req, res, next) => {
+  try{
+    const {id} = req.params;
+    console.log('id',id)
+    const client = await Client.findById(id);
+    const workerid = client.workerid;
+    client.workerid='';
+    client.assigned='ASSIGN';
+    client.assignStatus='NOT ASSIGNED';
+    await client.save();
+
+    const guide = await Guide.findById(workerid);
+    guide.modelclientid = guide.modelclientid.filter(clientId => clientId !== id);
+    guide.workStatus = guide.workStatus.filter(status => status.clientId !== id);
+
+    await guide.save();
+    res.status(200).json({
+      status: 200,
+      message: "ASSIGNED WORKER REMOVED",
+      data: {
+        guide, client
+      }
+    });
+  } catch (error) {
+    console.error('Error updating Client and Guide:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+}
+
+
+// const removeworker = async(req, res, next) => {
+//   const { id } = req.params;
+//   const client = await Client.findById(id);
+//   const workerid = client.data.data.workerid;
+//   client.workerid='';
+//   await client.save();
+
+//   const guide = 
+
+
+
+// }
 
 const getallclient = async(req, res, next) => {
     try {
@@ -127,5 +172,6 @@ module.exports = {
     deleteClient,
     editClient,
     getClientbyid,
-    getworkersid
+    getworkersid,
+    reassign
 }

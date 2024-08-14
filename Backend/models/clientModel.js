@@ -31,7 +31,7 @@ const clientSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true // Assuming password is required
+    required: false // Assuming password is required
   },
   role: {
     type: String,
