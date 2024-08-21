@@ -10,10 +10,10 @@ const ResetPassword = () => {
 
   const handleResetPassword = async () => {
     try {
-      const response = await axios.post('http://13.200.240.28:5007/api/auth/reset-password', { email, token: otp, password, repeatpassword: repeatPassword });
+      const response = await axios.post('http://localhost:5007/api/auth/reset-password', { email, token: otp, password, repeatpassword: repeatPassword });
       setMessage(response.data.message);
       if (response.status === 200) {
-        window.location.href = 'http://13.200.240.28:3000/login'; // Redirect to login page on successful password reset
+        window.location.href = 'http://localhost:3000/login'; // Redirect to login page on successful password reset
       }
     } catch (error) {
       setMessage("Failed to reset password");

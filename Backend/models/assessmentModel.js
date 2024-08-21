@@ -16,14 +16,9 @@ const workStatusSchema = new Schema({
     status: {
       type: String,
       required: false
-    },
-    isDeleted: {
-        type: String,
-        required: false,
-        default: false
     }
   });
-const GuideSchema = mongoose.Schema(
+const AssessmentSchema = mongoose.Schema(
     {
         name: {
             type: String,
@@ -70,11 +65,6 @@ const GuideSchema = mongoose.Schema(
             type:[String],
             required: false
         },
-        isDeleted: {
-            type: Boolean,
-            required: false,
-            default: false
-        },
         workStatus: [workStatusSchema],
     },
     {
@@ -82,4 +72,4 @@ const GuideSchema = mongoose.Schema(
     }
 );
  
-module.exports = mongoose.model('Guide', GuideSchema);
+module.exports = mongoose.model('Assessment', AssessmentSchema);

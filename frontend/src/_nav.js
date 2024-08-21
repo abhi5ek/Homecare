@@ -39,6 +39,13 @@ const _nav = [
     icon: <FontAwesomeIcon icon={faUser} style={{ color: '#ffffff' , marginRight: '8px'}} />, 
   },
 
+  {
+    component: CNavItem,
+    name: 'Assessment Management',
+    to: '/AssessmentManagement',
+    icon: <FontAwesomeIcon icon={faUser} style={{ color: '#ffffff' , marginRight: '8px'}} />, 
+  },
+
   // {
   //   component: CNavItem,
   //   name: 'Assessment Management',

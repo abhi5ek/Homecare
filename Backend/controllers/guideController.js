@@ -1,4 +1,5 @@
 const Guide = require('../models/guideModel');
+// const Assessment = require('../models/assessmentModel')
 const createError = require('../middleware/error')
 const createSuccess = require('../middleware/success')
 const jwt = require('jsonwebtoken')
@@ -10,7 +11,7 @@ const validator = require('validator');
 const register = async (req, res, next) => {
   try {
     // Extract the necessary fields from the request body
-    const { email, password, name, mobileNumber,address, role, age} = req.body;
+    const { email, password, name, mobileNumber,address, role, age, isDeleted} = req.body;
     const image = req.file ? `/uploads/${req.file.filename}` : null;
 
     if (!image) {
@@ -21,7 +22,7 @@ const register = async (req, res, next) => {
     if (!validator.isEmail(email)) {
       return next(createError(400, "Invalid email format"));
     }
-
+    console.log("isDeleted", isDeleted);
     // Name validation
     if (name.length <= 1 || name.length >= 25) {
       return next(createError(400, "Name must be between 2 to 25 characters long"));
@@ -53,12 +54,15 @@ const register = async (req, res, next) => {
       address: address,
       role: role,
       age: age,
+      isDeleted: isDeleted,
       image: image
     });
 
+    
+
     // Save the new guide to the database
     await newGuide.save();
-
+    console.log("guide", newGuide);
     // Send success response
     return res.status(200).json({
       status: 200,
@@ -156,7 +160,7 @@ const sendEmail = async (req, res) => {
     guide.otpExpiration = Date.now() + 15 * 60 * 1000; // 15 minutes
     await guide.save();
 
-    const resetPasswordLink = `http://13.200.240.28:3001/reset-password?token=${otp}`;
+    const resetPasswordLink = `http://localhost:3001/reset-password?token=${otp}`;
 
     const mailTransporter = nodemailer.createTransport({
       service: "GMAIL",
@@ -403,17 +407,25 @@ const updateWorker = async (req, res, next) => {
 const deleteGuide = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const guide = await Guide.findByIdAndDelete(id);
+
+    // Update the guide by setting the isDeleted field to false
+    const guide = await Guide.findByIdAndUpdate(
+      id,
+      { isDeleted: true }, // Assuming the field to mark deletion is 'isDeleted'
+      { new: true } // To return the updated document
+    );
+
     if (!guide) {
-      return next(createError(404, "User Not Found"));
+      return next(createError(404, "Guide Not Found"));
     }
+
     res.status(200).json({
       status: 200,
-      message: "User Deleted",
+      message: "Guide Marked as Deleted",
       data: guide
     });
   } catch (error) {
-    return next(createError(500, "Internal Server Error",error.message));
+    return next(createError(500, "Internal Server Error", error.message));
   }
 };
 

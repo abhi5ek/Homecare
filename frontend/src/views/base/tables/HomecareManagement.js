@@ -54,7 +54,8 @@ const HomecareManagement = () => {
     role: '',
     age: '',
     image: null,
-    address: ''
+    address: '',
+    isDeleted: false
   });
   const [error, setError] = useState(null);
 
@@ -68,7 +69,7 @@ const HomecareManagement = () => {
 
   const fetchGuides = async () => {
     try {
-      const response = await axios.get('http://13.200.240.28:5007/api/guide/');
+      const response = await axios.get('http://localhost:5007/api/guide/');
       setGuides(response.data.data);
     } catch (error) {
       setError('Error fetching guides');
@@ -78,7 +79,7 @@ const HomecareManagement = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://13.200.240.28:5007/api/guide/${id}`);
+      await axios.delete(`http://localhost:5007/api/guide/${id}`);
       setGuides(guides.filter(guide => guide._id !== id));
     } catch (error) {
       setError('Error deleting user');
@@ -97,15 +98,16 @@ const HomecareManagement = () => {
     formDataToSend.append('password', formData.password);
     formDataToSend.append('role', formData.role);
     formDataToSend.append('address', formData.address);
+    formDataToSend.append('isDeleted', formData.isDeleted);
     if (formData.image) {
-        formDataToSend.append('image', formData.image);
+      formDataToSend.append('image', formData.image);
     }
 
     try {
-      const response = await axios.post('http://13.200.240.28:5007/api/guide/register', formData ,{
+      const response = await axios.post('http://localhost:5007/api/guide/register', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
-      }
+        }
       });
       const newGuide = response.data.data;
       setGuides([...guides, newGuide]);
@@ -135,7 +137,7 @@ const HomecareManagement = () => {
     event.preventDefault();
     const { _id } = selectedGuide;
     try {
-      await axios.put(`http://13.200.240.28:5007/api/guide/editguide/${_id}`, formData);
+      await axios.put(`http://localhost:5007/api/guide/editguide/${_id}`, formData);
       setEditVisible(false);
       resetFormData();
       await fetchGuides(); // Fetch the latest data after updating
@@ -145,40 +147,47 @@ const HomecareManagement = () => {
     }
   };
 
-  const  handleworkstatus = async (id) => {
-    try{
-      const response = await axios.get(`http://13.200.240.28:5007/api/guide/getguide/${id}`);
+  const handleworkstatus = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:5007/api/guide/getguide/${id}`);
       const workStatus = response.data.data.workStatus;
-      console.log('workstatus',workStatus);
+      const filteredData = workStatus.filter(item => item.isDeleted === 'false');
+      console.log('filteredData', filteredData);
+      
       setGuideid(id);
-      setWorkstatusdata(workStatus);
-      console.log(response);
+      setWorkstatusdata(filteredData);
+      console.log('workstatusdata',workstatusdata);
       setStatus(true);
-    }catch(error){
+    } catch (error) {
       setError('Error workstatus');
       console.error('Error updating workstatus:', error);
     }
   }
 
   const deleteworkstatus = async (guideId, workStatusid, clientid) => {
-    try{
+    try {
       const confirmation = window.confirm('Work Assignment will be deleted')
-      if(confirmation){
+      if (confirmation) {
         // update the workStatus
-        const response = await axios.get(`http://13.200.240.28:5007/api/guide/getguide/${guideId}`);
-        const updatedguidedata = response.data.data.workStatus.filter( clientId => clientId._id!==workStatusid);
+        const response = await axios.get(`http://localhost:5007/api/guide/getguide/${guideId}`);
+        const updatedguidedata = response.data.data.workStatus.map(status => {
+          if (status._id === workStatusid) {
+            status.isDeleted = true; // Set isDeleted to true for the matching workStatus
+          }
+          return status;
+        });
         setStatus(false);
-       
+
         // update the modelclientid
-        const updatedmodelclientid = response.data.data.modelclientid.filter(modelclientid => modelclientid!=clientid );
-        await axios.put(`http://13.200.240.28:5007/api/guide/updateworker/${guideId}`, {modelclientid:updatedmodelclientid});
-      
+        const updatedmodelclientid = response.data.data.modelclientid.filter(modelclientid => modelclientid != clientid);
+        await axios.put(`http://localhost:5007/api/guide/updateworker/${guideId}`, { modelclientid: updatedmodelclientid });
+
         //removes workerid from clientdata
-        await axios.put(`http://13.200.240.28:5007/api/client/editClient/${clientid}`,{workerid:'', assignStatus:'NOT ASSIGNED', assigned:'ASSIGN'});
-        await axios.put(`http://13.200.240.28:5007/api/guide/deleteworkstatus/${guideId}`,{workStatus:updatedguidedata});
+        await axios.put(`http://localhost:5007/api/client/editClient/${clientid}`, { workerid: '', assignStatus: 'NOT ASSIGNED', assigned: 'ASSIGN' });
+        await axios.put(`http://localhost:5007/api/guide/deleteworkstatus/${guideId}`, { workStatus: updatedguidedata });
       }
 
-    }catch(error){
+    } catch (error) {
       setError('Error workstatus');
       console.error('Error updating workstatus:', error);
     }
@@ -186,11 +195,11 @@ const HomecareManagement = () => {
 
   const handleChange = (e) => {
     const { id, value, files } = e.target;
-        if (id === 'image') {
-            setFormData({ ...formData, image: files[0] });
-        } else {
-            setFormData({ ...formData, [id]: value });
-        }
+    if (id === 'image') {
+      setFormData({ ...formData, image: files[0] });
+    } else {
+      setFormData({ ...formData, [id]: value });
+    }
   };
 
   const resetFormData = () => {
@@ -202,7 +211,8 @@ const HomecareManagement = () => {
       role: '',
       age: '',
       image: null,
-      address: ''
+      address: '',
+      isDeleted: ''
     });
   };
 
@@ -242,40 +252,36 @@ const HomecareManagement = () => {
 
           </CTableHead>
           <CTableBody>
-            {guides.map((guide, index) => (
-              <CTableRow key={guide._id}>
-                <CTableHeaderCell scope="row" >{index + 1}</CTableHeaderCell>
-                <CTableDataCell style={{ fontSize: '0.870rem' }}>
-                  {guide.image && <img src={`http://13.200.240.28:5007${guide.image}`} alt={guide.name} style={{ width: '100px' }} />}
-                </CTableDataCell>
-                <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.name || 'null'}</CTableDataCell>
-                <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.age || 'null'}</CTableDataCell>
-                <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.email || 'null'}</CTableDataCell>
-                <CTableDataCell  style={{ fontSize: '0.870rem' }}>{guide.mobileNumber || 'null'}</CTableDataCell>
-                <CTableDataCell  style={{ fontSize: '0.870rem' }}>{guide.address || 'null'}</CTableDataCell>
-                <CTableDataCell  style={{ fontSize: '0.870rem' }}>
-                <CButton style={{width:'70px'}} color='info' onClick={() => handleworkstatus(guide._id)} size='sm' className="p-2">view</CButton>
-                </CTableDataCell>
-                {/* <CTableDataCell  style={{ fontSize: '0.870rem' }}>
-                  { guide.modelclientid.map((clients) =>(
-                  <CTableRow>
-                    <CTableDataCell>
-                   {clients}
-                    </CTableDataCell>
-                  </CTableRow>
-                  ))}
-                </CTableDataCell> */}
-                <CTableDataCell  style={{ fontSize: '0.870rem' }}>{guide.role || 'null'}</CTableDataCell>
-                <CTableDataCell className="text-center">
-                  <CButton className="me-1 p-1" onClick={() => handleEdit(guide)}> <FontAwesomeIcon icon={faEdit} style={{ color: "#903dbd" }} /></CButton>
-                  <CButton className="me-1 p-1" onClick={() => handleDelete(guide._id)}><FontAwesomeIcon
-                      icon={faTrash}
-                      style={{ color: "#a82424" }}
-                    /></CButton>
-                  <CButton className="p-1" onClick={() => { setSelectedGuide(guide); setVisible(true); }}><FontAwesomeIcon icon={faEye} style={{ color: "#93ab1c" }}/></CButton>
-                </CTableDataCell>
-              </CTableRow>
-            ))}
+            {guides
+              .filter(guide => !guide.isDeleted) // Filter out deleted guides
+              .map((guide, index) => (
+                <CTableRow key={guide._id}>
+                  <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                  <CTableDataCell style={{ fontSize: '0.870rem' }}>
+                    {guide.image && <img src={`http://localhost:5007${guide.image}`} alt={guide.name} style={{ width: '100px' }} />}
+                  </CTableDataCell>
+                  <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.name || 'null'}</CTableDataCell>
+                  <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.age || 'null'}</CTableDataCell>
+                  <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.email || 'null'}</CTableDataCell>
+                  <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.mobileNumber || 'null'}</CTableDataCell>
+                  <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.address || 'null'}</CTableDataCell>
+                  <CTableDataCell style={{ fontSize: '0.870rem' }}>
+                    <CButton style={{ width: '70px' }} color='info' onClick={() => handleworkstatus(guide._id)} size='sm' className="p-2">view</CButton>
+                  </CTableDataCell>
+                  <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.role || 'null'}</CTableDataCell>
+                  <CTableDataCell className="text-center">
+                    <CButton className="me-1 p-1" onClick={() => handleEdit(guide)}>
+                      <FontAwesomeIcon icon={faEdit} style={{ color: "#903dbd" }} />
+                    </CButton>
+                    <CButton className="me-1 p-1" onClick={() => handleDelete(guide._id)}>
+                      <FontAwesomeIcon icon={faTrash} style={{ color: "#a82424" }} />
+                    </CButton>
+                    <CButton className="p-1" onClick={() => { setSelectedGuide(guide); setVisible(true); }}>
+                      <FontAwesomeIcon icon={faEye} style={{ color: "#93ab1c" }} />
+                    </CButton>
+                  </CTableDataCell>
+                </CTableRow>
+              ))}
           </CTableBody>
 
         </CTable>
@@ -355,40 +361,46 @@ const HomecareManagement = () => {
         </CModalFooter>
       </CModal>
 
-      
-      <CModal size='lg' visible={status} onClose={() => { setStatus(false)}}>
+
+      <CModal size='lg' visible={status} onClose={() => { setStatus(false) }}>
         <CModalHeader closeButton>
           <CModalTitle>WORK STATUS</CModalTitle>
         </CModalHeader>
         <CModalBody>
-        <CTable hover bordered striped responsive>
-          <CTableHead color="dark">
-            <CTableRow>
-              <CTableHeaderCell scope="col" >#</CTableHeaderCell>
-              <CTableHeaderCell scope="col">ID</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Name </CTableHeaderCell>
-              <CTableHeaderCell scope="col" className="text-center">STATUS</CTableHeaderCell>
-              <CTableHeaderCell scope="col" className="text-center">ACTIONS</CTableHeaderCell>
-            </CTableRow>
-          </CTableHead>
-          <CTableBody>
-            {workstatusdata.map((workStatus, index) => (
-              <CTableRow key={workStatus._id}>
-                <CTableHeaderCell scope="row" >{index + 1}</CTableHeaderCell>
-                <CTableDataCell style={{ fontSize: '0.870rem' }}>{workStatus.clientId || 'null'}</CTableDataCell>
-                <CTableDataCell style={{ fontSize: '0.870rem' }}>{workStatus.clientName || 'null'}</CTableDataCell>
-                <CTableDataCell style={{ fontSize: '0.870rem' }}>
-                  <CButton color={workStatus.status === 'PENDING'? 'warning':'success'} style={{ width: '100px',height: '50px',padding: '4px 8px', 
-                  fontSize: '0.95rem'}}>{workStatus.status}</CButton>
-                </CTableDataCell>
-                <CTableDataCell style={{ fontSize: '0.870rem' }}>
-                  <CButton color='danger'  onClick={() => deleteworkstatus(guideId,workStatus._id,workStatus.clientId)}  style={{ width: '100px',height: '50px',padding: '4px 8px', 
-                  fontSize: '0.95rem'}}>DELETE</CButton>
-                </CTableDataCell>
+          <CTable hover bordered striped responsive>
+            <CTableHead color="dark">
+              <CTableRow>
+                <CTableHeaderCell scope="col" >#</CTableHeaderCell>
+                <CTableHeaderCell scope="col">ID</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Name </CTableHeaderCell>
+                <CTableHeaderCell scope="col" className="text-center">STATUS</CTableHeaderCell>
+                <CTableHeaderCell scope="col" className="text-center">ACTIONS</CTableHeaderCell>
               </CTableRow>
-            ))}
-          </CTableBody>
-        </CTable>
+            </CTableHead>
+            <CTableBody>
+              {workstatusdata
+                .map((items, index) => (
+                  <CTableRow key={items._id}>
+                    <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                    <CTableDataCell style={{ fontSize: '0.870rem' }}>{items.clientId || 'null'}</CTableDataCell>
+                    <CTableDataCell style={{ fontSize: '0.870rem' }}>{items.clientName || 'null'}</CTableDataCell>
+                    <CTableDataCell style={{ fontSize: '0.870rem' }}>
+                      <CButton color={items.status === 'PENDING' ? 'warning' : 'success'} style={{
+                        width: '100px', height: '50px', padding: '4px 8px',
+                        fontSize: '0.95rem'
+                      }}>{items.status}</CButton>
+                    </CTableDataCell>
+                    <CTableDataCell style={{ fontSize: '0.870rem' }}>
+                      <CButton color='danger' onClick={() => deleteworkstatus(guideId, items._id, items.clientId)} style={{
+                        width: '100px', height: '50px', padding: '4px 8px',
+                        fontSize: '0.95rem'
+                      }}>DELETE</CButton>
+                    </CTableDataCell>
+                  </CTableRow>
+                ))}
+            </CTableBody>
+
+          </CTable>
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => { setStatus(false); }}>Close</CButton>

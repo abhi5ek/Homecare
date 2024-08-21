@@ -56,7 +56,12 @@ const reassign = async(req, res, next) => {
 
     const guide = await Guide.findById(workerid);
     guide.modelclientid = guide.modelclientid.filter(clientId => clientId !== id);
-    guide.workStatus = guide.workStatus.filter(status => status.clientId !== id);
+    guide.workStatus = guide.workStatus.map(status => {
+      if (status.clientId === id) {
+        status.isDeleted = true; // Mark the work status as deleted
+      }
+      return status;
+    });
 
     await guide.save();
     res.status(200).json({
