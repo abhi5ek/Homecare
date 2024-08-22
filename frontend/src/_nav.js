@@ -41,7 +41,7 @@ const _nav = [
 
   {
     component: CNavItem,
-    name: 'Assessment Management',
+    name: 'Assessment History',
     to: '/AssessmentManagement',
     icon: <FontAwesomeIcon icon={faUser} style={{ color: '#ffffff' , marginRight: '8px'}} />, 
   },
