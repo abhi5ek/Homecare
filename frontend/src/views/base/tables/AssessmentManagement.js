@@ -43,7 +43,7 @@ const AssessmentManagement = () => {
 
   const fetchGuides = async () => {
     try {
-      const response = await axios.get('http://localhost:5007/api/guide/');
+      const response = await axios.get('http://13.200.240.28:5007/api/guide/');
       setGuides(response.data.data);
       console.log("response", response.data.data);
     } catch (error) {
@@ -54,7 +54,7 @@ const AssessmentManagement = () => {
 
   const viewClient = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:5007/api/guide/getguide/${id}`);
+      const response = await axios.get(`http://13.200.240.28:5007/api/guide/getguide/${id}`);
       setWorkstatus(response.data.data.workStatus);
       console.log(response.data.data.workStatus)
       console.log(workstatus);
@@ -99,7 +99,7 @@ const AssessmentManagement = () => {
                 <CTableRow key={guide._id}>
                   <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                   <CTableDataCell style={{ fontSize: '0.870rem' }}>
-                    {guide.image && <img src={`http://localhost:5007${guide.image}`} alt={guide.name} style={{ width: '100px' }} />}
+                    {guide.image && <img src={`http://13.200.240.28:5007${guide.image}`} alt={guide.name} style={{ width: '100px' }} />}
                   </CTableDataCell>
                   <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.name || 'null'}</CTableDataCell>
                   <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.age || 'null'}</CTableDataCell>

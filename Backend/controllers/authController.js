@@ -270,7 +270,7 @@ const sendEmail = async (req, res, next) => {
       await guide.save();
     }
 
-    const ResetPasswordLink = `http://localhost:5007/resetPassword?token=${otp}`;
+    const ResetPasswordLink = `http://13.200.240.28:5007/resetPassword?token=${otp}`;
 
     const mailTransporter = nodemailer.createTransport({
       service: "GMAIL",

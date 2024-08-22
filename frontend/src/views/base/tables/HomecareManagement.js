@@ -69,7 +69,7 @@ const HomecareManagement = () => {
 
   const fetchGuides = async () => {
     try {
-      const response = await axios.get('http://localhost:5007/api/guide/');
+      const response = await axios.get('http://13.200.240.28:5007/api/guide/');
       setGuides(response.data.data);
     } catch (error) {
       setError('Error fetching guides');
@@ -79,7 +79,7 @@ const HomecareManagement = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5007/api/guide/${id}`);
+      await axios.delete(`http://13.200.240.28:5007/api/guide/${id}`);
       setGuides(guides.filter(guide => guide._id !== id));
     } catch (error) {
       setError('Error deleting user');
@@ -104,7 +104,7 @@ const HomecareManagement = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5007/api/guide/register', formDataToSend, {
+      const response = await axios.post('http://13.200.240.28:5007/api/guide/register', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -137,7 +137,7 @@ const HomecareManagement = () => {
     event.preventDefault();
     const { _id } = selectedGuide;
     try {
-      await axios.put(`http://localhost:5007/api/guide/editguide/${_id}`, formData);
+      await axios.put(`http://13.200.240.28:5007/api/guide/editguide/${_id}`, formData);
       setEditVisible(false);
       resetFormData();
       await fetchGuides(); // Fetch the latest data after updating
@@ -149,7 +149,7 @@ const HomecareManagement = () => {
 
   const handleworkstatus = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:5007/api/guide/getguide/${id}`);
+      const response = await axios.get(`http://13.200.240.28:5007/api/guide/getguide/${id}`);
       const workStatus = response.data.data.workStatus;
       const filteredData = workStatus.filter(item => item.isDeleted === 'false');
       console.log('filteredData', filteredData);
@@ -169,7 +169,7 @@ const HomecareManagement = () => {
       const confirmation = window.confirm('Work Assignment will be deleted')
       if (confirmation) {
         // update the workStatus
-        const response = await axios.get(`http://localhost:5007/api/guide/getguide/${guideId}`);
+        const response = await axios.get(`http://13.200.240.28:5007/api/guide/getguide/${guideId}`);
         const updatedguidedata = response.data.data.workStatus.map(status => {
           if (status._id === workStatusid) {
             status.isDeleted = true; // Set isDeleted to true for the matching workStatus
@@ -180,11 +180,11 @@ const HomecareManagement = () => {
 
         // update the modelclientid
         const updatedmodelclientid = response.data.data.modelclientid.filter(modelclientid => modelclientid != clientid);
-        await axios.put(`http://localhost:5007/api/guide/updateworker/${guideId}`, { modelclientid: updatedmodelclientid });
+        await axios.put(`http://13.200.240.28:5007/api/guide/updateworker/${guideId}`, { modelclientid: updatedmodelclientid });
 
         //removes workerid from clientdata
-        await axios.put(`http://localhost:5007/api/client/editClient/${clientid}`, { workerid: '', assignStatus: 'NOT ASSIGNED', assigned: 'ASSIGN' });
-        await axios.put(`http://localhost:5007/api/guide/deleteworkstatus/${guideId}`, { workStatus: updatedguidedata });
+        await axios.put(`http://13.200.240.28:5007/api/client/editClient/${clientid}`, { workerid: '', assignStatus: 'NOT ASSIGNED', assigned: 'ASSIGN' });
+        await axios.put(`http://13.200.240.28:5007/api/guide/deleteworkstatus/${guideId}`, { workStatus: updatedguidedata });
       }
 
     } catch (error) {
@@ -258,7 +258,7 @@ const HomecareManagement = () => {
                 <CTableRow key={guide._id}>
                   <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                   <CTableDataCell style={{ fontSize: '0.870rem' }}>
-                    {guide.image && <img src={`http://localhost:5007${guide.image}`} alt={guide.name} style={{ width: '100px' }} />}
+                    {guide.image && <img src={`http://13.200.240.28:5007${guide.image}`} alt={guide.name} style={{ width: '100px' }} />}
                   </CTableDataCell>
                   <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.name || 'null'}</CTableDataCell>
                   <CTableDataCell style={{ fontSize: '0.870rem' }}>{guide.age || 'null'}</CTableDataCell>
