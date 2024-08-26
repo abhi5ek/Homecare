@@ -17,6 +17,7 @@ const slotRoute = require('./routes/slotRoute');
 const guideRoute = require('./routes/guideRoute');
 const clientRoute = require('./routes/clientRoute');
 const bookingRoute = require('./routes/bookingRoute');
+const {createPDF} = require('./functions/pdfGenerator');
 
 
 
@@ -32,17 +33,17 @@ const corsOptions = {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     optionsSuccessStatus: 204
-  };
-  
-  app.use(cors(corsOptions));
+};
+
+app.use(cors(corsOptions));
 
 // Use cors middleware with options
 // app.use(cors({
-//     origin: 'http://13.200.240.28:3001', // Allow requests from frontend origin
-//     credentials: true // Allow credentials (cookies, authorization headers, etc.)
-//   }));
-
-// Middleware
+    //     origin: 'http://localhost:3001', // Allow requests from frontend origin
+    //     credentials: true // Allow credentials (cookies, authorization headers, etc.)
+    //   }));
+    
+    // Middleware
 app.use(bodyParser.json());
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -62,6 +63,35 @@ app.use('/api/slot', slotRoute); //Added slot routes
 app.use('/api/guide', guideRoute); //Added slot routes
 app.use('/api/client', clientRoute); //Added slot routes
 app.use('/api/booking', bookingRoute); //Added slot routes
+
+app.post('/generate-pdf', async (req, res) => {
+    try {
+        const { id } = req.body;
+        console.log("id",id);
+        
+        if (!id) {
+            return res.status(400).send('Client ID is required');
+        }
+
+        const { pdfBuffer } = await createPDF(id);
+        // const { pdfBuffer } = await createPDF(id);
+
+        if (!pdfBuffer) {
+            return res.status(500).send('Failed to generate PDF');
+        }
+
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename="invoice-${id}.pdf"`,
+            'Content-Length': pdfBuffer.length
+        });
+
+        res.send(pdfBuffer);
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        res.status(500).send('Error generating PDF');
+    }
+});
 
 // Response handler middleware
 app.use((obj, req, res, next) => {
