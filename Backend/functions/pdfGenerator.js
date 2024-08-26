@@ -2,20 +2,32 @@ const puppeteer = require('puppeteer');
 const path = require('path');
 const fs = require('fs');
 const clientServiceAgreement = require('../models/ClientServiceAgreementModel');
+const Service = require('../models/servicePlan1Model');
+const Cna1 = require('../models/cna1Model'); // Assuming you have a model for CNA1
 
 exports.createPDF = async (id) => {
     try {
-        console.log("id", id);
-        const client = await clientServiceAgreement.findOne({ clientId: id });
-        console.log("client", client);
+        console.log("clientId", id);
         
-        if(!client){
+        // Fetch client, service, and CNA1 data
+        const client = await clientServiceAgreement.findOne({ clientId: id });
+        const service = await Service.findOne({ clientId: id });
+        const cna1 = await Cna1.findOne({ clientId: id });
+        
+        if (!client) {
             throw new Error('Client not found');
         }
+        if (!service) {
+            throw new Error('Service not found');
+        }
+        if (!cna1) {
+            throw new Error('CNA1 not found');
+        }
+
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
 
-        // Define the HTML content including the page break and frequency table
+        // Define the HTML content with adjusted column widths
         const htmlContent = `
 <!DOCTYPE html>
 <html>
@@ -48,18 +60,42 @@ exports.createPDF = async (id) => {
             font-size: 20px;
             margin-bottom: 20px;
         }
-        .details-table {
+        .details-table, .service-table, .cna1-table {
             width: 100%;
             border-collapse: collapse;
         }
         .details-table th,
-        .details-table td {
+        .details-table td,
+        .service-table th,
+        .service-table td,
+        .cna1-table th,
+        .cna1-table td {
             text-align: left;
             padding: 8px 12px;
             border: 1px solid #ddd;
         }
-        .details-table th {
+        .details-table th,
+        .service-table th,
+        .cna1-table th {
             background-color: #f2f2f2;
+        }
+        .details-table th {
+            width: 30%; /* Adjust as needed */
+        }
+        .details-table td {
+            width: 70%; /* Adjust as needed */
+        }
+        .service-table th {
+            width: 25%; /* Adjust as needed */
+        }
+        .service-table td {
+            width: 75%; /* Adjust as needed */
+        }
+        .cna1-table th {
+            width: 30%; /* Adjust as needed */
+        }
+        .cna1-table td {
+            width: 70%; /* Adjust as needed */
         }
         .signature-section {
             display: flex;
@@ -72,8 +108,7 @@ exports.createPDF = async (id) => {
         }
         .signature-block p {
             margin: 0;
-            padding-top: 40px;
-            border-top: 1px solid #000;
+            padding-top: 10px;
             font-weight: bold;
         }
         .date {
@@ -125,11 +160,91 @@ exports.createPDF = async (id) => {
             </div>
         </div>
     </div>
+    <div class="section service-section">
+        <h2>Service Details</h2>
+        <table class="service-table">
+            <tr>
+                <th>Date of Birth:</th>
+                <td>${new Date(service.dob).toLocaleDateString()}</td>
+            </tr>
+            <tr>
+                <th>Address:</th>
+                <td>${service.address}</td>
+            </tr>
+            <tr>
+                <th>City:</th>
+                <td>${service.city}</td>
+            </tr>
+            <tr>
+                <th>FL:</th>
+                <td>${service.fl}</td>
+            </tr>
+            <tr>
+                <th>Telephone:</th>
+                <td>${service.tel}</td>
+            </tr>
+            <tr>
+                <th>Emergency Contact:</th>
+                <td>${service.emergencyContact}</td>
+            </tr>
+            <tr>
+                <th>Emergency Telephone:</th>
+                <td>${service.emergencyTel}</td>
+            </tr>
+            <tr>
+                <th>Health Problems:</th>
+                <td>${service.healthProblems}</td>
+            </tr>
+            <tr>
+                <th>Service Time:</th>
+                <td>${service.serviceTime}</td>
+            </tr>
+            <tr>
+                <th>Frequency DNRO:</th>
+                <td>${service.frequency.dnro}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="section cna1-section">
+        <h2>CNA1</h2>
+        <table class="cna1-table">
+            <tr>
+                <th>Patient Name:</th>
+                <td>${cna1.patientName}</td>
+            </tr>
+            <tr>
+                <th>Gender:</th>
+                <td>${cna1.gender}</td>
+            </tr>
+            <tr>
+                <th>MR Number:</th>
+                <td>${cna1.mrNumber}</td>
+            </tr>
+            <tr>
+                <th>Date:</th>
+                <td>${new Date(cna1.date).toLocaleDateString()}</td>
+            </tr>
+            <tr>
+                <th>Primary Diagnosis:</th>
+                <td>${cna1.primaryDiagnosis}</td>
+            </tr>
+            <tr>
+                <th>Secondary Diagnosis:</th>
+                <td>${cna1.secondaryDiagnosis}</td>
+            </tr>
+            <tr>
+                <th>PCP Name:</th>
+                <td>${cna1.pcpName}</td>
+            </tr>
+            <tr>
+                <th>Other Physician Name:</th>
+                <td>${cna1.otherPhysicianName}</td>
+            </tr>
+        </table>
+    </div>
 </body>
 </html>
 `;
-
-        
 
         await page.setContent(htmlContent);
 
@@ -149,7 +264,7 @@ exports.createPDF = async (id) => {
         const filePath = path.join(__dirname, `invoice-${client.clientId}.pdf`);
         fs.writeFileSync(filePath, pdfBuffer);
 
-        return {pdfBuffer};
+        return { pdfBuffer };
     } catch (error) {
         console.error('Error generating PDF:', error);
         throw new Error('PDF generation failed');
